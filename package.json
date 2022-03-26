@@ -10,8 +10,11 @@
     "tsc:w": "tsc -w"
   },
   "devDependencies": {
-    "typescript": "^4.5.4",
     "prettier": "^2.5.1",
+    "typescript": "^4.5.4",
     "vite": "^2.8.0"
+  },
+  "dependencies": {
+    "rxjs": "^7.5.5"
   }
 }
