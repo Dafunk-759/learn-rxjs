@@ -1,1 +1,1 @@
-import "./learn-operators/filtering/skip"
+import "./learn-operators/subject/BehaviorSubject"
