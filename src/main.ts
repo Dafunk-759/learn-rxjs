@@ -1,1 +1,1 @@
-import "./learn-operators/subject/BehaviorSubject"
+import "./example/AlphabetInvasion"
