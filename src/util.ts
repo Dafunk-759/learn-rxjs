@@ -19,8 +19,14 @@ export function fromInterval<A>(arr: A[], time: number) {
  * 类似于 useReducer
  *
  * 返回
- * 一个`subject` 可以dispatch消息。
- * 一个`source` 可以作为数据源。
+ * 一个`subject` 可以dispatch消息.
+ * 一个`source` 可以作为数据源.
+ *
+ * 注意：
+ * 
+ *  `subject.next / complete / error`
+ * 
+ *  必须是异步运行的,一个事件循环中只能运行一个.
  */
 export function fromReducer<State, Action>(
   reducer: (state: State, action: Action) => State,
@@ -47,6 +53,13 @@ export function fromReducer<State, Action>(
   }
 }
 
+/**
+ * 注意：
+ * 
+ *  `subject.next / complete / error`
+ * 
+ *  必须是异步运行的,一个事件循环中只能运行一个.
+ */
 export function fromState<State>(initState: State) {
   type Setter = (state: State) => State
 
