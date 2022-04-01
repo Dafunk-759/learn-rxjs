@@ -18,6 +18,8 @@ export type State = {
   intrvl: number
 }
 
+export type Render = (state: State) => void
+
 const randomLetter = () =>
   String.fromCharCode(
     Math.random() *

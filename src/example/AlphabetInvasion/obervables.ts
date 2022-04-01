@@ -5,12 +5,20 @@ import {
   switchMap,
   startWith,
   filter,
-  observeOn
+  observeOn,
+  takeWhile,
+  takeLast,
+  takeUntil
 } from "rxjs/operators"
 
 import { source, CONSTANTS } from "./model"
 
-type Source = typeof source
+export const game = source.pipe(
+  takeWhile(
+    state => state.letters.length < CONSTANTS.endThreshold
+  )
+)
+const gameover = game.pipe(takeLast(1))
 
 /**
  *  s 表示 `source`
@@ -24,12 +32,12 @@ type Source = typeof source
  *
  *  3. switchMap 0-1-2-3-4-5-6-0-1-2-3-4-5...---0-1-2-3-...
  */
-export const toIntervals = (source: Source) =>
-  source.pipe(
-    map(state => state.intrvl),
-    distinctUntilChanged(),
-    switchMap(intrvl => interval(intrvl))
-  )
+export const intervalLetters = source.pipe(
+  map(state => state.intrvl),
+  distinctUntilChanged(),
+  switchMap(intrvl => interval(intrvl)),
+  takeUntil(gameover)
+)
 
 const toFilteredKeypress = (lastLetter: string) =>
   fromEvent<KeyboardEvent>(document, "keydown").pipe(
@@ -53,30 +61,29 @@ const toFilteredKeypress = (lastLetter: string) =>
  *
  *  3. toFilteredKeypress ka------------...---kz
  */
-export const toKeys = (source: Source) =>
-  source.pipe(
-    map(
-      state =>
-        state.letters[state.letters.length - 1]?.letter
-    ),
-    distinctUntilChanged(),
-    switchMap(toFilteredKeypress)
-  )
+export const keys = source.pipe(
+  map(
+    state => state.letters[state.letters.length - 1]?.letter
+  ),
+  distinctUntilChanged(),
+  switchMap(toFilteredKeypress),
+  takeUntil(gameover)
+)
 
 /**
  *  source: s------s------s------s------...------s
- * 
+ *
  *  needLevelUp: ------s------------s------...------
- * 
+ *
  * 这里要使用 asapScheduler (as soon as possible),
  * 因为要保证 subject.next(...) 必须是的异步.
  */
-export const toLevelUp = (source: Source) =>
-  source.pipe(
-    filter(
-      state =>
-        state.score > 0 &&
-        state.score % CONSTANTS.levelChangeThreshold === 0
-    ),
-    observeOn(asapScheduler)
-  )
+export const levelUps = source.pipe(
+  filter(
+    state =>
+      state.score > 0 &&
+      state.score % CONSTANTS.levelChangeThreshold === 0
+  ),
+  observeOn(asapScheduler),
+  takeUntil(gameover)
+)

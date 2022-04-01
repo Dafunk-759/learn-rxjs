@@ -1,59 +1,41 @@
-import { takeWhile } from "rxjs/operators"
-
-import type { State } from "./model"
+import type { Render } from "./model"
 import {
   CONSTANTS,
-  source,
   subject,
   addLetters,
   removeLastLetter,
   levelUp
 } from "./model"
 
-import { toIntervals, toKeys, toLevelUp } from "./operators"
+import {
+  intervalLetters,
+  keys,
+  levelUps,
+  game
+} from "./obervables"
 
 const app = document.getElementById("app")!
-
-const renderGame = (state: State) => (
-  (app.innerHTML = `Score: ${state.score}, Level: ${state.level} <br/>`),
-  state.letters.forEach(
-    l =>
-      (app.innerHTML +=
-        "&nbsp".repeat(l.xPos) + l.letter + "<br/>")
-  ),
-  (app.innerHTML +=
-    "<br/>".repeat(
-      CONSTANTS.endThreshold - state.letters.length - 1
-    ) + "-".repeat(CONSTANTS.gameWidth))
-)
-
+const renderGame: Render = state => {
+  app.innerHTML = /* html */ `
+    Score: ${state.score}, Level: ${state.level} <br/>
+    ${state.letters
+      .map(l => "&nbsp".repeat(l.xPos) + l.letter + "<br/>")
+      .join("")}
+    ${
+      "<br/>".repeat(
+        CONSTANTS.endThreshold - state.letters.length - 1
+      ) + "-".repeat(CONSTANTS.gameWidth)
+    }
+  `
+}
 const renderGameOver = () =>
   (app.innerHTML += "<br/>GAME OVER!")
 
-const intervalSub = source
-  .pipe(toIntervals)
-  .subscribe(i => subject.next(addLetters(i)))
+intervalLetters.subscribe(i => subject.next(addLetters(i)))
+keys.subscribe(_ => subject.next(removeLastLetter))
+levelUps.subscribe(_ => subject.next(levelUp))
 
-const keySub = source
-  .pipe(toKeys)
-  .subscribe(_ => subject.next(removeLastLetter))
-
-const levelUpSub = source
-  .pipe(toLevelUp)
-  .subscribe(_ => subject.next(levelUp))
-
-source
-  .pipe(
-    takeWhile(
-      state => state.letters.length < CONSTANTS.endThreshold
-    )
-  )
-  .subscribe({
-    next: renderGame,
-    complete: () => {
-      renderGameOver()
-      intervalSub.unsubscribe()
-      keySub.unsubscribe()
-      levelUpSub.unsubscribe()
-    }
-  })
+game.subscribe({
+  next: renderGame,
+  complete: renderGameOver
+})
