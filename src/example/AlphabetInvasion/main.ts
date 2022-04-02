@@ -28,8 +28,9 @@ const renderGame: Render = state => {
     }
   `
 }
-const renderGameOver = () =>
-  (app.innerHTML += "<br/>GAME OVER!")
+const renderGameOver = () => {
+  app.innerHTML += "<br/>GAME OVER!"
+}
 
 intervalLetters.subscribe(i => subject.next(addLetters(i)))
 keys.subscribe(_ => subject.next(removeLastLetter))

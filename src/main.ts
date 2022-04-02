@@ -1,1 +1,1 @@
-import "./example/AlphabetInvasion/main"
+import "./example/Breakout/main"
