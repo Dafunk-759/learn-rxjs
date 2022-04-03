@@ -80,26 +80,26 @@ game.subscribe({
 })
 
 keyleft.subscribe(_ => {
-  console.log("keyleft")
+  // console.log("keyleft")
   subject.next(moveleft)
 })
 keyright.subscribe(_ => {
-  console.log("keyright")
+  // console.log("keyright")
   subject.next(moveright)
 })
 ballInterval.subscribe(_ => {
-  console.log("ball interval")
+  // console.log("ball interval")
   subject.next(moveBall)
 })
 collide.subscribe(i => {
-  console.log("collide")
+  // console.log("collide")
   subject.next(onCollide(i))
 })
 catchBall.subscribe(sign => {
-  console.log("catchBall")
+  // console.log("catchBall")
   subject.next(changeDirx(sign))
 })
 crossed.subscribe(_ => {
-  console.log("crossed")
+  // console.log("crossed")
   subject.next(onCrossed)
 })

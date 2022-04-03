@@ -97,13 +97,12 @@ export const moveright: Setter = produce(draft => {
 })
 
 export const moveBall: Setter = produce(draft => {
-  draft.ball.dirX *= draft.ball.x > 0 ? 1 : -1
-  draft.ball.dirY *=
-    draft.ball.y > 0 && draft.ball.y < CONSTANT.gamesize - 1
-      ? 1
-      : -1
-  draft.ball.x += 1 * draft.ball.dirX
-  draft.ball.y -= 1 * draft.ball.dirY
+  const { ball } = draft
+  ball.dirX *= ball.x > 0 ? 1 : -1
+  ball.dirY *=
+    ball.y > 0 && ball.y < CONSTANT.gamesize - 1 ? 1 : -1
+  ball.x += 1 * ball.dirX
+  ball.y -= 1 * ball.dirY
 })
 
 const addScore: Setter = produce(draft => {
