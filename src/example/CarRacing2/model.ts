@@ -60,14 +60,13 @@ const randomCars: Cars = (() => {
   const randomY = () =>
     Math.floor(Math.random() * Math.floor(CONS.gameWidth))
 
-  let temp = Array.from({ length: 1000 }, () =>
+  return Array.from({ length: 1000 }, () =>
     Object.freeze({
       x: 0,
       y: randomY(),
       scored: false
     })
-  )
-  return Object.freeze(temp)
+  ).pipe(a => Object.freeze(a))
 })()
 const initRoad: Road = Object.freeze({
   cars: [randomCars[0]]

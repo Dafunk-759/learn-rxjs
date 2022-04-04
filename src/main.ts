@@ -1,1 +1,5 @@
-import "./example/CatchTheDot/main"
+// monkey patchs
+import "./monkeyPatch/pipe"
+
+// example
+import "./example/ClickNinja/main"

@@ -21,7 +21,7 @@ export const randomXY = (() => {
   }))
 })()
 
-const initState: State = Object.freeze({
+export const initState: State = Object.freeze({
   score: 0,
   interval: 500,
   dotSize: 30,

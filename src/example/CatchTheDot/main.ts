@@ -17,11 +17,17 @@ import {
   observeOn,
   takeUntil,
   takeLast,
-  distinctUntilChanged
+  distinctUntilChanged,
+  throttleTime
 } from "rxjs/operators"
 
 import type { State, Setter } from "./model"
-import { subject, source, randomXY } from "./model"
+import {
+  subject,
+  source,
+  randomXY,
+  initState
+} from "./model"
 
 import "./style.css"
 
@@ -29,9 +35,11 @@ const app = document.getElementById("app")!
 app.innerHTML = /* html */ `
   <div id="timer"></div>
   <div id="dot"></div>
+  <button id="reset">reset</button>
 `
 const timer = document.getElementById("timer")!
 const dot = document.getElementById("dot")!
+const reset = document.getElementById("reset")!
 
 const randomColor = () =>
   "#" + ((Math.random() * 0xffffff) << 0).toString(16)
@@ -133,11 +141,34 @@ const { game, gameEvents } = (() => {
   return { game, gameEvents }
 })()
 
-game.subscribe({
-  next: render,
-  complete: renderGameOver
-})
-gameEvents.subscribe(setter => {
-  console.log("events")
-  subject.next(setter)
-})
+const _main = (() => {
+  const gameObserver = {
+    next: render,
+    complete: renderGameOver
+  }
+  const gameEventsObserver = (setter: Setter) => {
+    console.log("events")
+    subject.next(setter)
+  }
+
+  let gameSub = game.subscribe(gameObserver)
+  let gameEventSub = gameEvents.subscribe(
+    gameEventsObserver
+  )
+
+  const resetClick = fromEvent<MouseEvent>(
+    reset,
+    "click"
+  ).pipe(throttleTime(250))
+
+  resetClick.subscribe(_ => {
+    console.log("reset")
+    gameSub.unsubscribe()
+    gameEventSub.unsubscribe()
+
+    subject.next(_ => initState)
+
+    gameSub = game.subscribe(gameObserver)
+    gameEventSub = gameEvents.subscribe(gameEventsObserver)
+  })
+})()
