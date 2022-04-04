@@ -1,1 +1,1 @@
-import "./example/CarRacing/main"
+import "./example/CarRacing2/main"
