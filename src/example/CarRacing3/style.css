@@ -1,0 +1,21 @@
+.road {
+  width: 100px;
+  height: 180px;
+  margin-top: 25px;
+  overflow: hidden;
+  position: absolute;
+}
+
+.dotted {
+  margin-top: -100px;
+  height: 300px;
+  border-left: 2px dashed lightgray;
+  position: absolute;
+  animation: road-moving 1s infinite linear;
+}
+
+@keyframes road-moving {
+  100% {
+    transform: translateY(100px);
+  }
+}

@@ -23,9 +23,9 @@ export function fromInterval<A>(arr: A[], time: number) {
  * 一个`source` 可以作为数据源.
  *
  * 注意：
- * 
+ *
  *  `subject.next / complete / error`
- * 
+ *
  *  必须是异步运行的,一个事件循环中只能运行一个.
  */
 export function fromReducer<State, Action>(
@@ -55,19 +55,54 @@ export function fromReducer<State, Action>(
 
 /**
  * 注意：
- * 
+ *
  *  `subject.next / complete / error`
- * 
+ *
  *  必须是异步运行的,一个事件循环中只能运行一个.
  */
-export function fromState<State>(initState: State) {
+export function fromState<State extends Object>(
+  initState: State
+) {
+  return fromStateImpl({ initState })
+}
+
+export function fromStateGuard<State extends Object>({
+  initState,
+  guard
+}: {
+  initState: State
+  guard: Record<string, (s: State) => State>
+}) {
+  return fromStateImpl({ initState, guard })
+}
+
+function fromStateImpl<State extends Object>({
+  initState,
+  guard
+}: {
+  initState: State
+  guard?: Record<string, (s: State) => State>
+}) {
   type Setter = (state: State) => State
 
   const subject = new BehaviorSubject<Setter>(
     () => initState
   )
   const source = subject.pipe(
-    scan((state, setter) => setter(state), initState)
+    scan(
+      (state, setter) =>
+        setter(state).pipe(s => {
+          if (guard) {
+            return Object.values(guard).reduce(
+              (s, g) => g(s),
+              s
+            )
+          } else {
+            return s
+          }
+        }),
+      initState
+    )
   )
 
   return {

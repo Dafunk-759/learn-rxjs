@@ -1,19 +1,17 @@
-import type { TimeInterval } from "rxjs"
-import { of, fromEvent, interval } from "rxjs"
+import { fromEvent } from "rxjs"
 import {
   timeInterval,
   takeWhile,
   scan,
-  tap,
   repeat,
-  finalize,
-  take,
-  map
+  map,
+  finalize
 } from "rxjs/operators"
 
-import type { State } from "./model"
+import produce from "immer"
 
-import { fromState, normalObserver } from "../../util"
+import type { State } from "./model"
+import { initState } from "./model"
 
 const app = document.getElementById("app")!
 
@@ -66,40 +64,32 @@ const clear = () => {
   app.innerText = ""
 }
 
-const test = (() => {
-  // interval(1000).pipe(timeInterval()).subscribe(console.log)
-  // fromEvent(document, "click")
-  //   .pipe(
-  //     scan(acc => acc + 1, 0),
-  //     timeInterval()
-  //   )
-  //   .subscribe(value => console.log(value))
-  // interval(1000)
-  //   .pipe(take(3), repeat(2))
-  //   .subscribe(console.log)
-  // of("message").pipe(repeat(3)).subscribe(console.log)
+const clickIntervals = fromEvent(
+  document,
+  "mousedown"
+).pipe(
+  timeInterval(),
+  map(value => value.interval)
+)
 
-  // fromEvent(document, "click")
-  //   .pipe(
-  //     scan(acc => acc + 1, 0),
-  //     take(2),
-  //     repeat()
-  //   )
-  //   .subscribe(normalObserver())
+const game = clickIntervals.pipe(
+  scan<number, State>(
+    (state, i) =>
+      produce(state, draft => {
+        draft.interval = i
+        draft.score++
+        draft.threshold -= 2
+      }),
+    initState
+  ),
+  takeWhile(state => state.interval < state.threshold),
+  finalize(() => {
+    console.log("finalize")
+    clear()
+  }),
+  repeat()
+)
 
-  const { subject, source } = fromState({ time: 0 })
-
-  interval(1000)
-    .pipe(
-      take(2),
-      map(_ => Math.random())
-    )
-    .subscribe({
-      next: n =>
-        subject.next(state => ({ ...state, time: n })),
-      complete: () => subject.complete()
-    })
-
-  source.pipe(repeat(3)).subscribe(normalObserver())
-})()
-const game = (() => {})()
+game.subscribe({
+  next: render
+})
