@@ -2,4 +2,4 @@
 import "./monkeyPatch/pipe"
 
 // example
-import "./example/FlappyBird/main"
+import "./example/GameLoop/main"
