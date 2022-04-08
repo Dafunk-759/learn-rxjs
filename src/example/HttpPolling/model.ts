@@ -14,15 +14,23 @@ export enum PollingKind {
   meats = "meats"
 }
 
-export type Cat = {
+type Cat = {
   t: PollingKind.cats
   url: string
 }
+export const cat = (url: string): Cat => ({
+  t: PollingKind.cats,
+  url
+})
 
-export type Meat = {
+type Meat = {
   t: PollingKind.meats
   content: string
 }
+export const meat = (content: string): Meat => ({
+  t: PollingKind.meats,
+  content
+})
 
 export enum PollingState {
   start = "start",

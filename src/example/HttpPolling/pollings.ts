@@ -1,7 +1,12 @@
 import { defer, from, interval, switchMap } from "rxjs"
 
-import type { Cat, Meat } from "./model"
-import { PollingKind, URLS, CONST } from "./model"
+import {
+  PollingKind,
+  URLS,
+  CONST,
+  cat,
+  meat
+} from "./model"
 
 const randoms = () =>
   [
@@ -16,13 +21,7 @@ const catPicture = defer(() =>
       fetch(url)
         .then(res => res.blob())
         .then(blob => URL.createObjectURL(blob) as string)
-        .then(
-          url =>
-            ({
-              t: PollingKind.cats,
-              url
-            } as Cat)
-        ),
+        .then(cat),
     imageSrcPromise => from(imageSrcPromise)
   )
 )
@@ -33,13 +32,7 @@ const meatsMessage = defer(() =>
       fetch(url)
         .then(res => res.json() as unknown)
         .then(data => (data as string[])[0])
-        .then(
-          content =>
-            ({
-              t: PollingKind.meats,
-              content
-            } as Meat)
-        ),
+        .then(meat),
     meatPromise => from(meatPromise)
   )
 )
