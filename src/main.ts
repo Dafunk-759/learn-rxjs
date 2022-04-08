@@ -2,4 +2,4 @@
 import "./monkeyPatch/pipe"
 
 // example
-import "./example/GameLoop/main"
+import "./example/HorizontalScrollIndicator/main"
