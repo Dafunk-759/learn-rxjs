@@ -1,0 +1,15 @@
+#start {
+  border: none;
+  background-color: #22aa22;
+  color: #ffffff;
+  font-weight: bolder;
+  padding: 10px;
+}
+
+#stop {
+  border: none;
+  background-color: #aa2222;
+  color: #ffffff;
+  font-weight: bolder;
+  padding: 10px;
+}

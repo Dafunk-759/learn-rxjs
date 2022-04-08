@@ -2,4 +2,4 @@
 import "./monkeyPatch/pipe"
 
 // example
-import "./example/HorizontalScrollIndicator/main"
+import "./example/HttpPolling/main"
